@@ -20,14 +20,14 @@ const account2 = {
 };
 
 const account3 = {
-    owner: "Steven Thomas Williams",
+    owner: "Steven Thomas Strange",
     movements: [200, -200, 340, -300, -20, 50, 400, -460],
     interestRate: 0.7,
     pin: 3333,
 };
 
 const account4 = {
-    owner: "Sarah Smith",
+    owner: "Matt Ghost",
     movements: [430, 1000, 700, 50, 90],
     interestRate: 1,
     pin: 4444,
@@ -75,7 +75,7 @@ const displayMovements = (movements) => {
             <div class="movements__type movements__type--${type}">${
             i + 1
         } ${type}</div>
-            <div class="movements__value">${mov}</div>
+            <div class="movements__value">${mov}€</div>
         </div>
         `;
         // а тут этот html код, мы, можно сказать, вставляем в index.html
@@ -84,16 +84,116 @@ const displayMovements = (movements) => {
     });
 };
 
-displayMovements(account1.movements);
+// displayMovements(account1.movements);
 
-//
+const calcAndPrintBalance = (acc) => {
+    acc.balance = acc.movements.reduce((acc, value) => acc + value, 0);
+    labelBalance.textContent = `${acc.balance}€`;
+};
+
+// calcAndPrintBalance(account1.movements);
+
+const calcDisplaySummary = (account) => {
+    const incomes = account.movements
+        .filter((mov) => mov > 0)
+        .reduce((acc, mov) => acc + mov, 0);
+
+    labelSumIn.textContent = `${incomes}€`;
+
+    const outcomes = account.movements
+        .filter((mov) => mov < 0)
+        .reduce((acc, mov) => acc + mov, 0);
+
+    labelSumOut.textContent = `${Math.abs(outcomes)}€`;
+
+    const interest = account.movements
+        .filter((mov) => mov > 0)
+        .map((deposit) => (deposit * account.interestRate) / 100)
+        .filter((int) => int >= 1)
+        .reduce((acc, int) => acc + int, 0);
+
+    labelSumInterest.textContent = `${interest}€`;
+};
+// calcDisplaySummary(account1.movements);
+
+const createUsernames = (accs) => {
+    accs.forEach((acc) => {
+        acc.username = acc.owner
+            .toLowerCase()
+            .split(" ")
+            .map((name) => name[0])
+            .join("");
+    });
+};
+
+createUsernames(accounts);
+
+// event handlers
+
+const upDateUI = (currenAccount) => {
+    // display movements
+    displayMovements(currenAccount.movements);
+    // display balance
+    calcAndPrintBalance(currenAccount);
+    // display summary
+    calcDisplaySummary(currenAccount);
+};
+
+let currenAccount;
+
+btnLogin.addEventListener("click", (event) => {
+    event.preventDefault();
+    currenAccount = accounts.find(
+        (acc) => acc.username === inputLoginUsername.value
+    );
+    console.log(currenAccount);
+
+    if (currenAccount?.pin === Number(inputLoginPin.value)) {
+        // display UI and message
+        labelWelcome.textContent = `Welcome back, ${
+            currenAccount.owner.split(" ")[0]
+        }`;
+        containerApp.style.opacity = 100;
+
+        // clear input fields
+        inputLoginUsername.value = "";
+        inputLoginPin.value = "";
+        inputLoginPin.blur();
+
+        upDateUI(currenAccount);
+    }
+});
+
+btnTransfer.addEventListener("click", (event) => {
+    event.preventDefault();
+
+    const amount = Number(inputTransferAmount.value);
+    const receiverAcc = accounts.find(
+        (acc) => acc.username === inputTransferTo.value
+    );
+    // console.log(amount, receiverAcc);
+    inputTransferTo.value = inputTransferAmount.value = "";
+    inputTransferAmount.blur();
+
+    if (
+        amount > 0 &&
+        receiverAcc &&
+        currenAccount.balance >= amount &&
+        receiverAcc?.username !== currenAccount.username
+    ) {
+        // doing da transfer
+        currenAccount.movements.push(-amount);
+        receiverAcc.movements.push(amount);
+        upDateUI(currenAccount);
+    }
+});
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
 
 /////////////////////////////////////////////////
-
+/*
 let arr = ["a", "b", "c", "d", "e"];
 
 // SLICE
@@ -137,9 +237,9 @@ console.log(arrs.slice(-1)[0]);
 console.log(arrs.at(-1));
 
 // FOR EACH
-const movementsEx = [200, 450, -400, 3000, -650, -130, 70, 1300];
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
-for (const [key, movement] of movementsEx.entries()) {
+for (const [key, movement] of movements.entries()) {
     if (movement > 0) {
         console.log(`ОПЕРАЦИЯ ${key + 1}: Вы положили ${movement} рублей.`);
     } else {
@@ -151,7 +251,7 @@ for (const [key, movement] of movementsEx.entries()) {
 
 console.log("---- FOREACH ----");
 // forEach(переменная*, индекс, массив) *по которой итерируемся, то бишь элемент массива
-movementsEx.forEach((movement, index) => {
+movements.forEach((movement, index) => {
     if (movement > 0) {
         console.log(`ОПЕРАЦИЯ ${index + 1}: Вы положили ${movement} рублей.`);
     } else {
@@ -178,3 +278,63 @@ const currenciesUniq = new Set(["USD", "GBP", "RUB", "EUR", "USD"]);
 currenciesUniq.forEach((value, _, map) => {
     console.log(`${value}`);
 });
+
+const euroToUsd = 1.1;
+
+// метод MAP выполняет ту же ф-ию, что и forEach, НО
+// он позволяет создать новый массив, не мутируя старый
+const movementsUSD = movements.map((value) => value * euroToUsd);
+
+console.log(movements);
+console.log(movementsUSD);
+
+const movementsDesc = movements.map(
+    (value, index) =>
+        `ОПЕРАЦИЯ ${index + 1}: Вы ${
+            value > 0 ? "положили" : "взяли"
+        } ${Math.abs(value)} рублей.`
+);
+
+console.log(movementsDesc);
+
+
+
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+
+console.log(movements);
+const deposits = movements.filter((value) => value > 0);
+console.log(deposits);
+
+const withdrawals = movements.filter((value) => value < 0);
+console.log(withdrawals);
+
+const balance = movements.reduce((accum, element, i, arr) => {
+    return accum + element;
+}, 0); // 0 - это изначальное значение аккума
+
+console.log(balance);
+
+// max value with reduce
+
+const maxValue = movements.reduce((acc, value) => {
+    if (value > acc) {
+        acc = value;
+    }
+    return acc;
+}, movements[0]);
+
+console.log(maxValue);
+
+const totalDepsUSD = movements
+    .filter((element) => element > 0)
+    .map((element) => element * 1.1)
+    .reduce((acc, element) => acc + element);
+
+console.log(totalDepsUSD);
+
+const firstWithdrawal = movements.find((mov) => mov < 0);
+console.log(firstWithdrawal);
+
+const account = accounts.find((acc) => acc.owner === "Matt Ghost");
+console.log(account);
+*/
