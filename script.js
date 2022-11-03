@@ -188,6 +188,45 @@ btnTransfer.addEventListener("click", (event) => {
     }
 });
 
+btnLoan.addEventListener("click", (event) => {
+    event.preventDefault();
+    const amount = Number(inputLoanAmount.value);
+
+    if (
+        amount > 0 &&
+        currenAccount.movements.some((mov) => mov >= amount * 0.1)
+    ) {
+        // add movement
+        currenAccount.movements.push(amount);
+        // update ui
+        upDateUI(currenAccount);
+    }
+    inputLoanAmount.value = "";
+    inputLoanAmount.blur();
+});
+
+btnClose.addEventListener("click", (event) => {
+    event.preventDefault();
+
+    if (
+        currenAccount.username === inputCloseUsername.value &&
+        currenAccount.pin === Number(inputClosePin.value)
+    ) {
+        const index = accounts.findIndex(
+            (acc) => acc.username === currenAccount.username
+        );
+        // delete account
+        accounts.splice(index, 1); // splice мутирует изначальный массива, поэтому можно
+        // нигде не сохранять рез-т, начинаем с index, УДАЛЯЕМ 1 элем
+
+        // hide ui
+        containerApp.style.opacity = 0;
+    }
+    labelWelcome.textContent = "Log in to get started";
+    inputCloseUsername.value = inputClosePin.value = "";
+    inputClosePin.blur();
+});
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -337,4 +376,24 @@ console.log(firstWithdrawal);
 
 const account = accounts.find((acc) => acc.owner === "Matt Ghost");
 console.log(account);
+
+
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+console.log(movements);
+// equality
+console.log(movements.includes(-130));
+// SOME condition
+// ХОТЯ БЫ ОДИН ЭЛЕМЕНТ ДОЛЖЕН СООТВЕТСТВОВАТЬ УСЛОВИЯ
+const anyDeps = movements.some((mov) => mov > 0);
+console.log(anyDeps);
+
+// EVERY КАЖДЫЙ ЭЛЕМЕНТ ДОЛЖЕН СООТВЕТСТВОВАТЬ УСЛОВИЯ
+console.log(movements.every((mov) => mov > 0));
+console.log(account4.movements.every((mov) => mov > 0));
+
+// separate callback
+const deposit = (mov) => mov > 0;
+console.log(movements.some(deposit));
+console.log(movements.every(deposit));
+console.log(movements.filter(deposit));
 */
