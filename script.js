@@ -61,10 +61,12 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
-const displayMovements = (movements) => {
+const displayMovements = (movements, sort = false) => {
     containerMovements.innerHTML = "";
 
-    movements.forEach((mov, i) => {
+    const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+
+    movs.forEach((mov, i) => {
         const type = mov > 0 ? "deposit" : "withdrawal";
 
         // хоть в реальной разработке используются фреймворки
@@ -227,6 +229,13 @@ btnClose.addEventListener("click", (event) => {
     inputClosePin.blur();
 });
 
+let sorted = false;
+
+btnSort.addEventListener("click", (event) => {
+    event.preventDefault();
+    displayMovements(currenAccount.movements, !sorted);
+    sorted = !sorted;
+});
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -396,4 +405,35 @@ const deposit = (mov) => mov > 0;
 console.log(movements.some(deposit));
 console.log(movements.every(deposit));
 console.log(movements.filter(deposit));
+
+
+const arr = [[1, 2, 3], [4, 5, 6], 7, 8, 9];
+console.log(arr.flat());
+
+const arrDeep = [[[1, 2], 3], [4, [5, 6]], 7, 8, 9];
+console.log(arrDeep.flat(2));
+
+//flat
+const overallBalance = accounts
+    .map((acc) => acc.movements)
+    .flat()
+    .reduce((acc, mov) => acc + mov, 0);
+
+console.log(overallBalance);
+
+// flatMap
+
+const overallBalanceFM = accounts
+    .flatMap((acc) => acc.movements)
+    .reduce((acc, mov) => acc + mov, 0);
+
+console.log(overallBalanceFM);
+
+// sorting strings
+const owners = ["Matt", "Smith", "Broski"];
+console.log(owners.sort());
+
+// sorting numbers
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+console.log(movements.sort((a, b) => a - b));
 */
