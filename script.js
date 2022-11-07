@@ -236,6 +236,7 @@ btnSort.addEventListener("click", (event) => {
     displayMovements(currenAccount.movements, !sorted);
     sorted = !sorted;
 });
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -437,3 +438,38 @@ console.log(owners.sort());
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 console.log(movements.sort((a, b) => a - b));
 */
+
+const a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+// FILL METHOD
+const x = new Array(7);
+console.log(x);
+x.fill(0, 3, 5); // заполнить массив начиная с индекса 3 по индекс 5
+console.log(x);
+
+a.fill(444, 1, 5);
+console.log(a);
+
+// Array.from()
+// ({length: n}, callback fun)
+const genArr = Array.from({ length: 9 }, () => 1);
+console.log(genArr);
+
+// '_' - пишут, когда не используют элемент внутри ф-ии
+const genArr19 = Array.from({ length: 9 }, (_, i) => i + 1);
+console.log(genArr19);
+
+// 100 random dice rolls
+const diceRolls = Array.from({ length: 100 }, (elem) => {
+    elem = Math.trunc(Math.random() * 6) + 1;
+    return elem;
+});
+
+console.log(diceRolls);
+
+labelBalance.addEventListener("click", () => {
+    const movementsUI = Array.from(
+        document.querySelectorAll(".movements__value"),
+        (elem) => Number(elem.textContent.replace("€", ""))
+    );
+    console.log(movementsUI);
+});
