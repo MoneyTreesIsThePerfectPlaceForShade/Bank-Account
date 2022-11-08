@@ -473,3 +473,68 @@ labelBalance.addEventListener("click", () => {
     );
     console.log(movementsUI);
 });
+
+const bankDepositSum = accounts
+    .flatMap((acc) => acc.movements)
+    .filter((mov) => mov > 0)
+    .reduce((acc, elem) => acc + elem, 0);
+console.log(bankDepositSum);
+
+const bankDeposits1000Count = accounts
+    .flatMap((acc) => acc.movements)
+    .filter((mov) => mov >= 1000).length;
+// .reduce((acc, elem, i, arr) => arr.length,0);
+
+const bankDeposits1000CountReduce = accounts
+    .flatMap((acc) => acc.movements)
+    .reduce((count, elem) => (elem >= 1000 ? ++count : count), 0);
+
+console.log(bankDeposits1000Count);
+console.log(bankDeposits1000CountReduce);
+
+// с помощью метода reduce можно возвращать не только какое-то одно значение
+// но также массивы с объектами
+const { deposits, withdrawals } = accounts
+    .flatMap((acc) => acc.movements)
+    .reduce(
+        (sums, cur) => {
+            // cur > 0 ? (sums.deposits += cur) : (sums.withdrawls += cur);
+            // в данном случае [] - это обращение к полю объекта, а не к элему массива
+            sums[cur > 0 ? "deposits" : "withdrawals"] += cur;
+            return sums;
+        },
+        { deposits: 0, withdrawals: 0 }
+    );
+
+console.log(deposits + " | " + withdrawals);
+
+//
+
+const convertTitleCase = (title) => {
+    const exceptions = [
+        "a",
+        "an",
+        "and",
+        "the",
+        "but",
+        "or",
+        "on",
+        "in",
+        "with",
+        "as",
+    ];
+
+    const cap = (str) => str[0].toUpperCase() + str.slice(1);
+
+    const titleCase = title
+        .toLowerCase()
+        .split(" ")
+        .map((word) => (exceptions.includes(word) ? word : cap(word)))
+        .join(" ");
+
+    return cap(titleCase);
+};
+
+console.log(convertTitleCase("this is a nice title, baby"));
+console.log(convertTitleCase("SoMetHing CRAzy AS A titlE and some shit"));
+console.log(convertTitleCase("and still"));
